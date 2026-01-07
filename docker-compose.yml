@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: djaas-postgres
+    environment:
+      POSTGRES_USER: djaas
+      POSTGRES_PASSWORD: djaas_dev
+      POSTGRES_DB: djaas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts:/scripts
+      - ./migrations:/migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U djaas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: djaas-api
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      ENV: development
+      LOG_LEVEL: info
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: djaas
+      DB_PASSWORD: djaas_dev
+      DB_NAME: djaas
+      DB_SSLMODE: disable
+      DB_MAX_CONNECTIONS: 25
+      DB_MAX_IDLE_CONNECTIONS: 5
+      RATE_LIMIT_REQUESTS: 10
+      RATE_LIMIT_WINDOW: 1m
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
