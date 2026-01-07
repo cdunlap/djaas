@@ -222,8 +222,9 @@ All errors return JSON with the following format:
 
 The API implements per-IP rate limiting with the following default limits:
 - **10 requests per minute** per IP address
+- **Disabled in development mode** (when `ENV=development`)
 
-Rate limit information is included in response headers:
+Rate limit information is included in response headers (production only):
 ```
 X-RateLimit-Limit: 10
 X-RateLimit-Window: 1m

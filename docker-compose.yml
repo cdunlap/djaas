@@ -4,10 +4,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: djaas-postgres
-    environment:
-      POSTGRES_USER: djaas
-      POSTGRES_PASSWORD: djaas_dev
-      POSTGRES_DB: djaas
+    env_file:
+      - .env.docker
     ports:
       - "5432:5432"
     volumes:
@@ -15,10 +13,12 @@ services:
       - ./scripts:/scripts
       - ./migrations:/migrations
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U djaas"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-djaas}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - djaas-network
 
   api:
     build:
@@ -27,23 +27,17 @@ services:
     container_name: djaas-api
     ports:
       - "8080:8080"
-    environment:
-      PORT: 8080
-      ENV: development
-      LOG_LEVEL: info
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: djaas
-      DB_PASSWORD: djaas_dev
-      DB_NAME: djaas
-      DB_SSLMODE: disable
-      DB_MAX_CONNECTIONS: 25
-      DB_MAX_IDLE_CONNECTIONS: 5
-      RATE_LIMIT_REQUESTS: 10
-      RATE_LIMIT_WINDOW: 1m
+    env_file:
+      - .env.docker
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - djaas-network
 
 volumes:
   postgres_data:
+
+networks:
+  djaas-network:
+    driver: bridge
