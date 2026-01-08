@@ -63,7 +63,10 @@ gcloud services enable `
 
 # Create Artifact Registry repository
 Write-Host "Creating Artifact Registry repository..." -ForegroundColor Yellow
-$repoExists = gcloud artifacts repositories describe djaas --location=$Region 2>$null
+$ErrorActionPreference = "Continue"
+$repoCheck = gcloud artifacts repositories describe djaas --location=$Region 2>&1
+$ErrorActionPreference = "Stop"
+
 if ($LASTEXITCODE -ne 0) {
     gcloud artifacts repositories create djaas `
         --repository-format=docker `
@@ -85,7 +88,10 @@ docker push $ImageUrl
 
 # Create Cloud SQL instance
 Write-Host "Creating Cloud SQL PostgreSQL instance (this takes 5-10 minutes)..." -ForegroundColor Yellow
-$instanceExists = gcloud sql instances describe $DbInstanceName 2>$null
+$ErrorActionPreference = "Continue"
+$instanceCheck = gcloud sql instances describe $DbInstanceName 2>&1
+$ErrorActionPreference = "Stop"
+
 if ($LASTEXITCODE -ne 0) {
     gcloud sql instances create $DbInstanceName `
         --database-version=POSTGRES_16 `
@@ -110,7 +116,10 @@ Write-Host "Connection name: $ConnectionName" -ForegroundColor Green
 
 # Create database
 Write-Host "Creating database..." -ForegroundColor Yellow
-$dbExists = gcloud sql databases describe $DbName --instance=$DbInstanceName 2>$null
+$ErrorActionPreference = "Continue"
+$dbCheck = gcloud sql databases describe $DbName --instance=$DbInstanceName 2>&1
+$ErrorActionPreference = "Stop"
+
 if ($LASTEXITCODE -ne 0) {
     gcloud sql databases create $DbName --instance=$DbInstanceName
 } else {
@@ -132,7 +141,10 @@ if ($userList -notcontains $DbUser) {
 Write-Host "Storing secrets in Secret Manager..." -ForegroundColor Yellow
 
 # Database password
-$secretExists = gcloud secrets describe db-password 2>$null
+$ErrorActionPreference = "Continue"
+$secretCheck = gcloud secrets describe db-password 2>&1
+$ErrorActionPreference = "Stop"
+
 if ($LASTEXITCODE -ne 0) {
     $DbPassword | gcloud secrets create db-password --data-file=-
 } else {
