@@ -55,7 +55,7 @@ if ([string]::IsNullOrEmpty($DbPassword)) {
 # Enable required APIs
 Write-Host "Enabling required Google Cloud APIs (this may take a few minutes)..." -ForegroundColor Yellow
 gcloud services enable `
-    cloudrun.googleapis.com `
+    run.googleapis.com `
     sqladmin.googleapis.com `
     secretmanager.googleapis.com `
     artifactregistry.googleapis.com `

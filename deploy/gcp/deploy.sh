@@ -59,7 +59,7 @@ fi
 # Enable required APIs
 echo -e "${YELLOW}Enabling required Google Cloud APIs (this may take a few minutes)...${NC}"
 gcloud services enable \
-    cloudrun.googleapis.com \
+    run.googleapis.com \
     sqladmin.googleapis.com \
     secretmanager.googleapis.com \
     artifactregistry.googleapis.com \
