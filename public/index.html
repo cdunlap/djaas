@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJaaS - Dad Joke as a Service</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤣 DJaaS</h1>
+            <p class="subtitle">Dad Joke as a Service</p>
+        </header>
+
+        <main>
+            <!-- Search Controls -->
+            <div class="controls">
+                <div class="search-box">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search for jokes..."
+                        aria-label="Search for jokes"
+                    >
+                    <button id="searchBtn" class="btn btn-primary">Search</button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="categorySelect">Category:</label>
+                        <select id="categorySelect">
+                            <option value="">All Categories</option>
+                            <option value="general">General</option>
+                            <option value="food">Food</option>
+                            <option value="animals">Animals</option>
+                            <option value="science">Science</option>
+                            <option value="technology">Technology</option>
+                            <option value="sports">Sports</option>
+                            <option value="dad">Dad</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="tagSelect">Tags:</label>
+                        <select id="tagSelect" multiple size="5">
+                            <option value="wordplay">Wordplay</option>
+                            <option value="puns">Puns</option>
+                            <option value="dad-humor">Dad Humor</option>
+                            <option value="one-liner">One-liner</option>
+                            <option value="knock-knock">Knock-knock</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="physics">Physics</option>
+                            <option value="biology">Biology</option>
+                            <option value="cooking">Cooking</option>
+                            <option value="pizza">Pizza</option>
+                            <option value="pasta">Pasta</option>
+                            <option value="animals">Animals</option>
+                            <option value="dogs">Dogs</option>
+                            <option value="cats">Cats</option>
+                            <option value="birds">Birds</option>
+                            <option value="technology">Technology</option>
+                            <option value="computers">Computers</option>
+                            <option value="programming">Programming</option>
+                            <option value="groan-worthy">Groan-worthy</option>
+                            <option value="clever">Clever</option>
+                            <option value="silly">Silly</option>
+                            <option value="meta">Meta</option>
+                        </select>
+                        <small>Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="randomBtn" class="btn btn-secondary">🎲 Random Joke</button>
+                    <button id="clearBtn" class="btn btn-tertiary">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Joke Display -->
+            <div id="jokeDisplay" class="joke-card hidden">
+                <div class="joke-content">
+                    <p class="setup" id="jokeSetup"></p>
+                    <p class="punchline" id="jokePunchline"></p>
+                </div>
+                <div class="joke-meta">
+                    <span class="category" id="jokeCategory"></span>
+                    <div class="tags" id="jokeTags"></div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Fetching joke...</p>
+            </div>
+
+            <!-- Error Display -->
+            <div id="error" class="error hidden">
+                <p id="errorMessage"></p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state">
+                <p>👆 Click "Random Joke" or search for something funny!</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by DJaaS API | <a href="/api/v1/joke" target="_blank">API Docs</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

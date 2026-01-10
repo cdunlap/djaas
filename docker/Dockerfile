@@ -31,6 +31,9 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder --chown=appuser:appuser /app/api .
 
+# Copy public directory for static files
+COPY --from=builder --chown=appuser:appuser /app/public ./public
+
 # Switch to non-root user
 USER appuser
 

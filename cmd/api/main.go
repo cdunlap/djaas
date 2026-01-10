@@ -119,6 +119,12 @@ func main() {
 		r.Get("/joke", h.HandleGetJoke)
 	})
 
+	// Serve static files from public directory
+	fileServer := http.FileServer(http.Dir("public"))
+	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		fileServer.ServeHTTP(w, r)
+	})
+
 	// Create HTTP server
 	server := &http.Server{
 		Addr:         ":" + cfg.Server.Port,
