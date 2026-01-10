@@ -318,125 +318,13 @@ INSERT INTO jokes (setup, punchline, category)
 VALUES ('Your setup here', 'Your punchline here', 'general');
 ```
 
-## Cloud Deployment
+## Deployment
 
-The application is cloud-agnostic and can be deployed to any platform that supports Docker containers.
-
-### Easiest Deployment Options
-
-#### **Railway (Recommended - Simplest Setup)**
-
-**Why Railway:**
-- ✅ **5-minute deployment** via web UI only
-- ✅ **$5 free credit/month** (no credit card required)
-- ✅ **Zero CLI setup** - just click buttons
-- ✅ **Free PostgreSQL** included
-- ✅ **Auto-deploy** on git push
-
-**Quick start:**
-1. Go to https://railway.app
-2. Sign in with GitHub
-3. Deploy from your repo
-4. Add PostgreSQL database
-5. Done!
-
-📖 **See [deploy/railway/README.md](deploy/railway/README.md) for step-by-step guide**
-
----
-
-### Advanced Deployment Options
-
-#### **Google Cloud Run (Best Free Tier)**
-
-**Free Tier Benefits:**
-- 2 million requests/month FREE
-- 360,000 GB-seconds/month FREE
-- $300 credit for 90 days
-- Perfect for hobby projects and testing
-
-**Deploy in 15 minutes:**
-```powershell
-# Windows PowerShell
-cd deploy\gcp
-.\deploy.ps1
-
-# Linux/macOS/WSL
-cd deploy/gcp
-./deploy.sh
-```
-
-**What you get:**
-- Cloud Run serverless deployment
-- Cloud SQL PostgreSQL database
-- Automatic SSL/HTTPS
-- Auto-scaling from 0 to N
-- Full monitoring and logging
-
-📖 **See [deploy/gcp/README.md](deploy/gcp/README.md) for detailed instructions**
-
-#### **Azure Container Apps**
-
-**Free Tier Benefits:**
-- $200 free credit for 30 days
-- Azure for Students: $100 credit annually
-
-**Deploy:**
-```powershell
-# Windows PowerShell
-cd deploy\azure
-.\deploy.ps1
-
-# Linux/macOS/WSL
-cd deploy/azure
-./deploy.sh
-```
-
-**What you get:**
-- Azure Container Apps deployment
-- Azure Database for PostgreSQL
-- Azure Key Vault for secrets
-- Auto-scaling and load balancing
-
-📖 **See [deploy/azure/README.md](deploy/azure/README.md) for detailed instructions**
-
-### Other Cloud Platforms
-
-#### AWS ECS
+The Docker image is small (~20MB) and portable. Run it anywhere that supports Docker:
 
 ```bash
-# Build and push to ECR
 docker build -f docker/Dockerfile -t djaas:latest .
-docker tag djaas:latest <account-id>.dkr.ecr.<region>.amazonaws.com/djaas:latest
-docker push <account-id>.dkr.ecr.<region>.amazonaws.com/djaas:latest
-
-# Create RDS PostgreSQL instance
-# Create ECS task definition
-# Deploy to ECS cluster
-```
-
-#### Kubernetes
-
-Example deployment:
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: djaas
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-      - name: djaas
-        image: your-registry/djaas:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-secret
-              key: password
+docker run -p 8080:8080 --env-file .env djaas:latest
 ```
 
 ## Architecture
