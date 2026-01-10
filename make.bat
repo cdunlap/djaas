@@ -15,6 +15,7 @@ if "%1"=="migrate-down" goto migrate-down
 if "%1"=="seed" goto seed
 if "%1"=="deps" goto deps
 if "%1"=="tidy" goto tidy
+if "%1"=="sqlc-generate" goto sqlc-generate
 
 echo Unknown command: %1
 goto help
@@ -33,6 +34,7 @@ echo   make.bat migrate-down  - Run database migrations down
 echo   make.bat seed          - Seed database with jokes
 echo   make.bat deps          - Download dependencies
 echo   make.bat tidy          - Tidy go.mod
+echo   make.bat sqlc-generate - Generate sqlc code (using Docker)
 goto end
 
 :build
@@ -112,6 +114,12 @@ goto end
 :tidy
 echo Tidying go.mod...
 go mod tidy
+goto end
+
+:sqlc-generate
+echo Generating sqlc code using Docker...
+docker run --rm -v "%cd%:/src" -w /src sqlc/sqlc:1.27.0 generate
+echo sqlc code generated in internal/database/
 goto end
 
 :end
