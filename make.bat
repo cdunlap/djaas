@@ -10,6 +10,8 @@ if "%1"=="clean" goto clean
 if "%1"=="docker-build" goto docker-build
 if "%1"=="docker-up" goto docker-up
 if "%1"=="docker-down" goto docker-down
+if "%1"=="dev-up" goto dev-up
+if "%1"=="dev-down" goto dev-down
 if "%1"=="migrate-up" goto migrate-up
 if "%1"=="migrate-down" goto migrate-down
 if "%1"=="seed" goto seed
@@ -29,6 +31,8 @@ echo   make.bat clean         - Clean build artifacts
 echo   make.bat docker-build  - Build Docker image
 echo   make.bat docker-up     - Start docker-compose services
 echo   make.bat docker-down   - Stop docker-compose services
+echo   make.bat dev-up        - Start dev environment with hot reload
+echo   make.bat dev-down      - Stop dev environment
 echo   make.bat migrate-up    - Run database migrations up
 echo   make.bat migrate-down  - Run database migrations down
 echo   make.bat seed          - Seed database with jokes
@@ -72,6 +76,16 @@ goto end
 :docker-down
 echo Stopping docker-compose services...
 docker-compose down
+goto end
+
+:dev-up
+echo Starting development environment with hot reload...
+docker-compose -f docker-compose.dev.yml up --build
+goto end
+
+:dev-down
+echo Stopping development environment...
+docker-compose -f docker-compose.dev.yml down
 goto end
 
 :migrate-up

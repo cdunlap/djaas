@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: djaas-postgres-dev
+    env_file:
+      - .env.docker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./scripts:/scripts
+      - ./migrations:/migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-djaas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - djaas-network
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: djaas-api-dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.docker
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      # Exclude node_modules and other build artifacts
+      - /app/tmp
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - djaas-network
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  djaas-network:
+    driver: bridge
