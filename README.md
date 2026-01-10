@@ -322,11 +322,31 @@ VALUES ('Your setup here', 'Your punchline here', 'general');
 
 The application is cloud-agnostic and can be deployed to any platform that supports Docker containers.
 
-### Automated Deployment Scripts
+### Easiest Deployment Options
 
-We provide automated deployment scripts for easy cloud deployment:
+#### **Railway (Recommended - Simplest Setup)**
 
-#### **Google Cloud Run (Recommended - Best Free Tier)**
+**Why Railway:**
+- ✅ **5-minute deployment** via web UI only
+- ✅ **$5 free credit/month** (no credit card required)
+- ✅ **Zero CLI setup** - just click buttons
+- ✅ **Free PostgreSQL** included
+- ✅ **Auto-deploy** on git push
+
+**Quick start:**
+1. Go to https://railway.app
+2. Sign in with GitHub
+3. Deploy from your repo
+4. Add PostgreSQL database
+5. Done!
+
+📖 **See [deploy/railway/README.md](deploy/railway/README.md) for step-by-step guide**
+
+---
+
+### Advanced Deployment Options
+
+#### **Google Cloud Run (Best Free Tier)**
 
 **Free Tier Benefits:**
 - 2 million requests/month FREE
