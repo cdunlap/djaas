@@ -156,5 +156,33 @@ function handleClear() {
     emptyState.classList.remove('hidden');
 }
 
-// Initialize - show empty state
+// Fetch and populate tags on page load
+async function loadTags() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/tags`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch tags');
+        }
+
+        const data = await response.json();
+        const tags = data.tags || [];
+
+        // Clear existing options
+        tagSelect.innerHTML = '';
+
+        // Populate tag select
+        tags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag;
+            option.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+            tagSelect.appendChild(option);
+        });
+    } catch (err) {
+        console.error('Failed to load tags:', err);
+        // Fallback: leave empty or show error
+    }
+}
+
+// Initialize
+loadTags();
 emptyState.classList.remove('hidden');

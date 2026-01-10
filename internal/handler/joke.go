@@ -105,3 +105,19 @@ func (h *Handler) writeErrorJSON(w http.ResponseWriter, status int, error string
 	}
 	h.writeJSON(w, status, errorResponse)
 }
+
+// HandleGetTags returns all available tags
+func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	tags, err := h.jokeService.GetAllTags(ctx)
+	if err != nil {
+		h.logger.Error("failed to get tags", "error", err)
+		h.writeErrorJSON(w, http.StatusInternalServerError, "internal_error", "Failed to retrieve tags")
+		return
+	}
+
+	h.writeJSON(w, http.StatusOK, map[string][]string{
+		"tags": tags,
+	})
+}

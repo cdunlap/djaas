@@ -241,3 +241,14 @@ func (s *JokeService) GetJokeByAllFilters(ctx context.Context, tags []string, ca
 
 	return s.buildJokeWithTags(joke, joketags), nil
 }
+
+// GetAllTags retrieves all available tags
+func (s *JokeService) GetAllTags(ctx context.Context) ([]string, error) {
+	tags, err := s.queries.GetAllTags(ctx)
+	if err != nil {
+		s.logger.Error("failed to get all tags", "error", err)
+		return nil, fmt.Errorf("failed to get all tags: %w", err)
+	}
+
+	return tags, nil
+}

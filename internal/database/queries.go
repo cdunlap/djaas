@@ -284,3 +284,33 @@ func (q *Queries) GetJokeByAllFilters(ctx context.Context, tags []string, catego
 
 	return &joke, nil
 }
+
+// GetAllTags retrieves all unique tag names from the database
+func (q *Queries) GetAllTags(ctx context.Context) ([]string, error) {
+	query := `
+		SELECT name
+		FROM tags
+		ORDER BY name ASC
+	`
+
+	rows, err := q.pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tags []string
+	for rows.Next() {
+		var tag string
+		if err := rows.Scan(&tag); err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}
