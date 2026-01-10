@@ -1,0 +1,11 @@
+# Railway/Nixpacks Configuration
+# Force Railway to use Dockerfile instead of auto-detecting Go
+
+[phases.build]
+dependsOn = []
+
+[phases.install]
+dependsOn = []
+
+[start]
+cmd = "echo 'Using Dockerfile'"

@@ -17,6 +17,12 @@ Deploy DJaaS to Railway in **5 minutes** with zero CLI setup!
 - **Usage-based pricing**: Only pay for what you use
 - **Estimate**: Small app with DB = ~$3-5/month
 
+## Prerequisites
+
+Make sure you have:
+- ✅ Pushed your code to GitHub
+- ✅ A `Dockerfile` at the root of your repo (already included)
+
 ## Quick Start
 
 ### Step 1: Sign Up for Railway
@@ -31,7 +37,7 @@ Deploy DJaaS to Railway in **5 minutes** with zero CLI setup!
 1. Click "New Project"
 2. Select "Deploy from GitHub repo"
 3. Select your `djaas` repository
-4. Railway will detect the Dockerfile automatically
+4. Railway will detect the Dockerfile automatically (at the root of the repo)
 
 ### Step 3: Add PostgreSQL Database
 
