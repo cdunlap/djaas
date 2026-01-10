@@ -3,7 +3,7 @@ package handler
 import (
 	"log/slog"
 
-	"github.com/yourusername/djaas/internal/service"
+	"github.com/cdunlap/djaas/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

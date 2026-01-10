@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yourusername/djaas/internal/model"
+	"github.com/cdunlap/djaas/internal/model"
 )
 
 // HandleHealth handles GET /health requests

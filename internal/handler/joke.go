@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yourusername/djaas/internal/model"
-	"github.com/yourusername/djaas/internal/service"
+	"github.com/cdunlap/djaas/internal/model"
+	"github.com/cdunlap/djaas/internal/service"
 )
 
 // HandleGetJoke handles GET /api/v1/joke requests

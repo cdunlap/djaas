@@ -1,4 +1,4 @@
-module github.com/yourusername/djaas
+module github.com/cdunlap/djaas
 
 go 1.25.5
 

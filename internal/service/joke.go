@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/yourusername/djaas/internal/database"
-	"github.com/yourusername/djaas/internal/model"
+	"github.com/cdunlap/djaas/internal/database"
+	"github.com/cdunlap/djaas/internal/model"
 	"github.com/jackc/pgx/v5"
 )
 
