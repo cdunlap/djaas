@@ -84,7 +84,21 @@ Air watches these files (configured in `.air.toml`):
 
 ### Troubleshooting
 
-**Air not rebuilding:**
+**Air not rebuilding on Windows (Docker Desktop):**
+
+File system notifications don't work properly with Docker Desktop on Windows. The `.air.toml` is already configured with polling enabled:
+```toml
+poll = true
+poll_interval = 1000  # Check for changes every second
+```
+
+If hot reload still doesn't work:
+1. Verify Air is running: `docker logs -f djaas-api-dev`
+2. Make a change and save a `.go` file
+3. Wait 1-2 seconds for the poll interval
+4. Check logs for rebuild messages
+
+**Air not rebuilding (general):**
 - Check that you saved the file
 - Look for build errors in logs: `docker logs djaas-api-dev`
 - Verify the file isn't in an excluded directory
