@@ -64,12 +64,15 @@ func (q *Queries) GetAllTags(ctx context.Context) ([]string, error) {
 }
 
 const getJokeByAllFilters = `-- name: GetJokeByAllFilters :one
-SELECT DISTINCT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
+SELECT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
 FROM jokes j
-INNER JOIN joke_tags jt ON j.id = jt.joke_id
-INNER JOIN tags t ON jt.tag_id = t.id
-WHERE t.name = ANY($1::text[])
-  AND j.category = $2
+WHERE j.category = $2
+  AND j.id IN (
+    SELECT DISTINCT jt.joke_id
+    FROM joke_tags jt
+    INNER JOIN tags t ON jt.tag_id = t.id
+    WHERE t.name = ANY($1::text[])
+)
   AND (j.setup ILIKE '%' || $3 || '%' OR j.punchline ILIKE '%' || $3 || '%')
 ORDER BY RANDOM()
 LIMIT 1
@@ -166,11 +169,14 @@ func (q *Queries) GetJokeByID(ctx context.Context, id int32) (Joke, error) {
 }
 
 const getJokeByTags = `-- name: GetJokeByTags :one
-SELECT DISTINCT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
+SELECT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
 FROM jokes j
-INNER JOIN joke_tags jt ON j.id = jt.joke_id
-INNER JOIN tags t ON jt.tag_id = t.id
-WHERE t.name = ANY($1::text[])
+WHERE j.id IN (
+    SELECT DISTINCT jt.joke_id
+    FROM joke_tags jt
+    INNER JOIN tags t ON jt.tag_id = t.id
+    WHERE t.name = ANY($1::text[])
+)
 ORDER BY RANDOM()
 LIMIT 1
 `
@@ -190,12 +196,15 @@ func (q *Queries) GetJokeByTags(ctx context.Context, dollar_1 []string) (Joke, e
 }
 
 const getJokeByTagsAndCategory = `-- name: GetJokeByTagsAndCategory :one
-SELECT DISTINCT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
+SELECT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
 FROM jokes j
-INNER JOIN joke_tags jt ON j.id = jt.joke_id
-INNER JOIN tags t ON jt.tag_id = t.id
-WHERE t.name = ANY($1::text[])
-  AND j.category = $2
+WHERE j.category = $2
+  AND j.id IN (
+    SELECT DISTINCT jt.joke_id
+    FROM joke_tags jt
+    INNER JOIN tags t ON jt.tag_id = t.id
+    WHERE t.name = ANY($1::text[])
+)
 ORDER BY RANDOM()
 LIMIT 1
 `
@@ -220,11 +229,14 @@ func (q *Queries) GetJokeByTagsAndCategory(ctx context.Context, arg GetJokeByTag
 }
 
 const getJokeByTagsAndSearch = `-- name: GetJokeByTagsAndSearch :one
-SELECT DISTINCT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
+SELECT j.id, j.setup, j.punchline, j.category, j.created_at, j.updated_at
 FROM jokes j
-INNER JOIN joke_tags jt ON j.id = jt.joke_id
-INNER JOIN tags t ON jt.tag_id = t.id
-WHERE t.name = ANY($1::text[])
+WHERE j.id IN (
+    SELECT DISTINCT jt.joke_id
+    FROM joke_tags jt
+    INNER JOIN tags t ON jt.tag_id = t.id
+    WHERE t.name = ANY($1::text[])
+)
   AND (j.setup ILIKE '%' || $2 || '%' OR j.punchline ILIKE '%' || $2 || '%')
 ORDER BY RANDOM()
 LIMIT 1
