@@ -121,3 +121,37 @@ func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 		"tags": tags,
 	})
 }
+
+// CreateJokeRequest represents the request body for creating a joke
+type CreateJokeRequest struct {
+	Setup     string   `json:"setup"`
+	Punchline string   `json:"punchline"`
+	Category  *string  `json:"category,omitempty"`
+	Tags      []string `json:"tags,omitempty"`
+}
+
+// HandleCreateJoke handles POST /api/v1/joke requests
+func (h *Handler) HandleCreateJoke(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req CreateJokeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.writeErrorJSON(w, http.StatusBadRequest, "invalid_json", "Invalid JSON request body")
+		return
+	}
+
+	// Validate required fields
+	if req.Setup == "" || req.Punchline == "" {
+		h.writeErrorJSON(w, http.StatusBadRequest, "missing_fields", "Setup and punchline are required")
+		return
+	}
+
+	// Create the joke
+	joke, err := h.jokeService.CreateJoke(ctx, req.Setup, req.Punchline, req.Category, req.Tags)
+	if err != nil {
+		h.handleError(w, err)
+		return
+	}
+
+	h.writeJSON(w, http.StatusCreated, joke)
+}

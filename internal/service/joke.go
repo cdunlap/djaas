@@ -289,3 +289,68 @@ func (s *JokeService) GetAllTags(ctx context.Context) ([]string, error) {
 
 	return tags, nil
 }
+
+// CreateJoke creates a new joke with associated tags
+func (s *JokeService) CreateJoke(ctx context.Context, setup, punchline string, category *string, tagNames []string) (*model.Joke, error) {
+	if setup == "" || punchline == "" {
+		return nil, ErrInvalidInput
+	}
+
+	// Convert category to pgtype.Text
+	var pgCategory pgtype.Text
+	if category != nil {
+		pgCategory = toPgText(*category)
+	}
+
+	// Create the joke
+	params := database.CreateJokeParams{
+		Setup:     setup,
+		Punchline: punchline,
+		Category:  pgCategory,
+	}
+
+	joke, err := s.queries.CreateJoke(ctx, params)
+	if err != nil {
+		s.logger.Error("failed to create joke", "error", err)
+		return nil, fmt.Errorf("failed to create joke: %w", err)
+	}
+
+	// Associate tags with the joke
+	for _, tagName := range tagNames {
+		if tagName == "" {
+			continue
+		}
+
+		// Try to get existing tag
+		tag, err := s.queries.GetTagByName(ctx, tagName)
+		if err != nil {
+			// Tag doesn't exist, create it
+			tag, err = s.queries.CreateTag(ctx, tagName)
+			if err != nil {
+				s.logger.Error("failed to create tag", "error", err, "tag", tagName)
+				// Continue with other tags rather than failing
+				continue
+			}
+		}
+
+		// Associate tag with joke
+		err = s.queries.AddJokeTag(ctx, database.AddJokeTagParams{
+			JokeID: joke.ID,
+			TagID:  tag.ID,
+		})
+		if err != nil {
+			s.logger.Error("failed to associate tag with joke", "error", err, "joke_id", joke.ID, "tag_id", tag.ID)
+			// Continue with other tags
+			continue
+		}
+	}
+
+	// Get all tags for the created joke
+	tags, err := s.queries.GetTagsForJoke(ctx, joke.ID)
+	if err != nil {
+		s.logger.Error("failed to get tags for created joke", "error", err, "joke_id", joke.ID)
+		tags = []string{}
+	}
+
+	return s.buildJokeWithTags(joke, tags), nil
+}

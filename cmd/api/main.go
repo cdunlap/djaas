@@ -117,6 +117,7 @@ func main() {
 	r.Get("/health", h.HandleHealth)
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/joke", h.HandleGetJoke)
+		r.Post("/joke", h.HandleCreateJoke)
 		r.Get("/tags", h.HandleGetTags)
 	})
 

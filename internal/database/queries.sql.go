@@ -11,6 +11,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addJokeTag = `-- name: AddJokeTag :exec
+INSERT INTO joke_tags (joke_id, tag_id)
+VALUES ($1, $2)
+ON CONFLICT (joke_id, tag_id) DO NOTHING
+`
+
+type AddJokeTagParams struct {
+	JokeID int32 `json:"joke_id"`
+	TagID  int32 `json:"tag_id"`
+}
+
+func (q *Queries) AddJokeTag(ctx context.Context, arg AddJokeTagParams) error {
+	_, err := q.db.Exec(ctx, addJokeTag, arg.JokeID, arg.TagID)
+	return err
+}
+
 const createJoke = `-- name: CreateJoke :one
 INSERT INTO jokes (setup, punchline, category)
 VALUES ($1, $2, $3)
@@ -34,6 +50,20 @@ func (q *Queries) CreateJoke(ctx context.Context, arg CreateJokeParams) (Joke, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	return i, err
+}
+
+const createTag = `-- name: CreateTag :one
+INSERT INTO tags (name)
+VALUES ($1)
+ON CONFLICT (name) DO NOTHING
+RETURNING id, name, created_at
+`
+
+func (q *Queries) CreateTag(ctx context.Context, name string) (Tag, error) {
+	row := q.db.QueryRow(ctx, createTag, name)
+	var i Tag
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 
@@ -279,6 +309,19 @@ func (q *Queries) GetRandomJoke(ctx context.Context) (Joke, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	return i, err
+}
+
+const getTagByName = `-- name: GetTagByName :one
+SELECT id, name, created_at
+FROM tags
+WHERE name = $1
+`
+
+func (q *Queries) GetTagByName(ctx context.Context, name string) (Tag, error) {
+	row := q.db.QueryRow(ctx, getTagByName, name)
+	var i Tag
+	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
 	return i, err
 }
 

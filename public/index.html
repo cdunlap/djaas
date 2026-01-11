@@ -74,6 +74,7 @@
                 <div class="action-buttons">
                     <button id="randomBtn" class="btn btn-secondary">🎲 Random Joke</button>
                     <button id="clearBtn" class="btn btn-tertiary">Clear Filters</button>
+                    <button id="addJokeBtn" class="btn btn-success">➕ Add Joke</button>
                 </div>
             </div>
 
@@ -105,6 +106,78 @@
                 <p>👆 Click "Random Joke" or search for something funny!</p>
             </div>
         </main>
+
+        <!-- Add Joke Modal -->
+        <div id="addJokeModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add a New Joke</h2>
+                    <button id="closeModal" class="btn-close">&times;</button>
+                </div>
+                <form id="addJokeForm">
+                    <div class="form-group">
+                        <label for="jokeSetupInput">Setup (Required):</label>
+                        <textarea
+                            id="jokeSetupInput"
+                            name="setup"
+                            rows="3"
+                            placeholder="Why did the chicken cross the road?"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jokePunchlineInput">Punchline (Required):</label>
+                        <textarea
+                            id="jokePunchlineInput"
+                            name="punchline"
+                            rows="2"
+                            placeholder="To get to the other side!"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jokeCategoryInput">Category (Optional):</label>
+                        <select id="jokeCategoryInput" name="category">
+                            <option value="">None</option>
+                            <option value="general">General</option>
+                            <option value="food">Food</option>
+                            <option value="animals">Animals</option>
+                            <option value="science">Science</option>
+                            <option value="technology">Technology</option>
+                            <option value="sports">Sports</option>
+                            <option value="dad">Dad</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jokeTagsInput">Tags (Optional - comma separated):</label>
+                        <input
+                            type="text"
+                            id="jokeTagsInput"
+                            name="tags"
+                            placeholder="wordplay, puns, clever"
+                        >
+                        <small>Separate tags with commas. New tags will be created automatically.</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Add Joke</button>
+                        <button type="button" id="cancelBtn" class="btn btn-tertiary">Cancel</button>
+                    </div>
+                </form>
+
+                <div id="formSuccess" class="form-success hidden">
+                    ✅ Joke added successfully!
+                </div>
+
+                <div id="formError" class="form-error hidden">
+                    <p id="formErrorMessage"></p>
+                </div>
+            </div>
+        </div>
+
 <!-- 
         <footer>
             <p>Powered by DJaaS API | <a href="/api/v1/joke" target="_blank">API Docs</a></p>

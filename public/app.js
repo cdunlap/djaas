@@ -186,3 +186,103 @@ async function loadTags() {
 // Initialize
 loadTags();
 emptyState.classList.remove('hidden');
+
+// Modal elements
+const addJokeBtn = document.getElementById('addJokeBtn');
+const addJokeModal = document.getElementById('addJokeModal');
+const closeModal = document.getElementById('closeModal');
+const cancelBtn = document.getElementById('cancelBtn');
+const addJokeForm = document.getElementById('addJokeForm');
+const formSuccess = document.getElementById('formSuccess');
+const formError = document.getElementById('formError');
+const formErrorMessage = document.getElementById('formErrorMessage');
+
+// Open modal
+addJokeBtn.addEventListener('click', () => {
+    addJokeModal.classList.remove('hidden');
+    formSuccess.classList.add('hidden');
+    formError.classList.add('hidden');
+});
+
+// Close modal
+function closeAddJokeModal() {
+    addJokeModal.classList.add('hidden');
+    addJokeForm.reset();
+    formSuccess.classList.add('hidden');
+    formError.classList.add('hidden');
+}
+
+closeModal.addEventListener('click', closeAddJokeModal);
+cancelBtn.addEventListener('click', closeAddJokeModal);
+
+// Close modal when clicking outside
+addJokeModal.addEventListener('click', (e) => {
+    if (e.target === addJokeModal) {
+        closeAddJokeModal();
+    }
+});
+
+// Handle form submission
+addJokeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const setup = document.getElementById('jokeSetupInput').value.trim();
+    const punchline = document.getElementById('jokePunchlineInput').value.trim();
+    const category = document.getElementById('jokeCategoryInput').value;
+    const tagsInput = document.getElementById('jokeTagsInput').value;
+
+    // Parse tags from comma-separated input
+    const tags = tagsInput
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag !== '');
+
+    // Build request body
+    const requestBody = {
+        setup,
+        punchline,
+    };
+
+    if (category) {
+        requestBody.category = category;
+    }
+
+    if (tags.length > 0) {
+        requestBody.tags = tags;
+    }
+
+    try {
+        formSuccess.classList.add('hidden');
+        formError.classList.add('hidden');
+
+        const response = await fetch(`${API_BASE_URL}/joke`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to add joke');
+        }
+
+        const newJoke = await response.json();
+
+        // Show success message
+        formSuccess.classList.remove('hidden');
+        addJokeForm.reset();
+
+        // Reload tags in case new ones were added
+        await loadTags();
+
+        // Close modal after 2 seconds
+        setTimeout(() => {
+            closeAddJokeModal();
+        }, 2000);
+    } catch (err) {
+        formError.classList.remove('hidden');
+        formErrorMessage.textContent = err.message;
+    }
+});

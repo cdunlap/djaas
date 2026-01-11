@@ -100,3 +100,19 @@ LIMIT 1;
 SELECT name
 FROM tags
 ORDER BY name ASC;
+
+-- name: CreateTag :one
+INSERT INTO tags (name)
+VALUES ($1)
+ON CONFLICT (name) DO NOTHING
+RETURNING id, name, created_at;
+
+-- name: GetTagByName :one
+SELECT id, name, created_at
+FROM tags
+WHERE name = $1;
+
+-- name: AddJokeTag :exec
+INSERT INTO joke_tags (joke_id, tag_id)
+VALUES ($1, $2)
+ON CONFLICT (joke_id, tag_id) DO NOTHING;
