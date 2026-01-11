@@ -4,6 +4,9 @@ FROM golang:1.25.5-alpine AS builder
 # Install build dependencies
 RUN apk add --no-cache git
 
+# Install swag for generating API documentation
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+
 WORKDIR /app
 
 # Copy go mod files
@@ -12,6 +15,9 @@ RUN go mod download
 
 # Copy source code
 COPY . .
+
+# Generate swagger documentation
+RUN swag init -g cmd/api/main.go -o docs
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api ./cmd/api
@@ -33,6 +39,9 @@ COPY --from=builder --chown=appuser:appuser /app/api .
 
 # Copy public directory for static files
 COPY --from=builder --chown=appuser:appuser /app/public ./public
+
+# Copy swagger documentation
+COPY --from=builder --chown=appuser:appuser /app/docs ./docs
 
 # Switch to non-root user
 USER appuser

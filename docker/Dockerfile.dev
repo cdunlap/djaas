@@ -1,8 +1,9 @@
 # Development Dockerfile with hot reload using Air
 FROM golang:1.25.5-alpine
 
-# Install Air for hot reload
-RUN go install github.com/air-verse/air@latest
+# Install Air for hot reload and Swag for API docs
+RUN go install github.com/air-verse/air@latest && \
+    go install github.com/swaggo/swag/cmd/swag@latest
 
 # Install git (needed for some go modules)
 RUN apk add --no-cache git

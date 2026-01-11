@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 )
 
 // SecurityHeaders adds security headers to all responses
@@ -26,17 +27,32 @@ func SecurityHeaders() func(http.Handler) http.Handler {
 			// Referrer policy
 			w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 
-			// Content Security Policy
-			w.Header().Set("Content-Security-Policy",
-				"default-src 'self'; "+
-				"script-src 'self'; "+
-				"style-src 'self' 'unsafe-inline'; "+
-				"img-src 'self' data:; "+
-				"font-src 'self'; "+
-				"connect-src 'self'; "+
-				"frame-ancestors 'none'; "+
-				"base-uri 'self'; "+
-				"form-action 'self'")
+			// Content Security Policy - relaxed for Swagger UI
+			if strings.HasPrefix(r.URL.Path, "/swagger/") {
+				// Swagger UI requires inline scripts and styles
+				w.Header().Set("Content-Security-Policy",
+					"default-src 'self'; "+
+					"script-src 'self' 'unsafe-inline'; "+
+					"style-src 'self' 'unsafe-inline'; "+
+					"img-src 'self' data:; "+
+					"font-src 'self'; "+
+					"connect-src 'self'; "+
+					"frame-ancestors 'none'; "+
+					"base-uri 'self'; "+
+					"form-action 'self'")
+			} else {
+				// Strict CSP for application routes
+				w.Header().Set("Content-Security-Policy",
+					"default-src 'self'; "+
+					"script-src 'self'; "+
+					"style-src 'self' 'unsafe-inline'; "+
+					"img-src 'self' data:; "+
+					"font-src 'self'; "+
+					"connect-src 'self'; "+
+					"frame-ancestors 'none'; "+
+					"base-uri 'self'; "+
+					"form-action 'self'")
+			}
 
 			next.ServeHTTP(w, r)
 		})

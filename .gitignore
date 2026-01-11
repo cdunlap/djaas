@@ -42,3 +42,6 @@ vendor/
 *.db
 *.sqlite
 postgres_data/
+
+# Generated documentation
+docs/

@@ -18,6 +18,7 @@ if "%1"=="seed" goto seed
 if "%1"=="deps" goto deps
 if "%1"=="tidy" goto tidy
 if "%1"=="sqlc-generate" goto sqlc-generate
+if "%1"=="swagger-generate" goto swagger-generate
 
 echo Unknown command: %1
 goto help
@@ -36,9 +37,10 @@ echo   make.bat dev-down      - Stop dev environment
 echo   make.bat migrate-up    - Run database migrations up
 echo   make.bat migrate-down  - Run database migrations down
 echo   make.bat seed          - Seed database with jokes
-echo   make.bat deps          - Download dependencies
-echo   make.bat tidy          - Tidy go.mod
-echo   make.bat sqlc-generate - Generate sqlc code (using Docker)
+echo   make.bat deps             - Download dependencies
+echo   make.bat tidy             - Tidy go.mod
+echo   make.bat sqlc-generate    - Generate sqlc code (using Docker)
+echo   make.bat swagger-generate - Generate swagger documentation
 goto end
 
 :build
@@ -134,6 +136,13 @@ goto end
 echo Generating sqlc code using Docker...
 docker run --rm -v "%cd%:/src" -w /src sqlc/sqlc:1.27.0 generate
 echo sqlc code generated in internal/database/
+goto end
+
+:swagger-generate
+echo Generating swagger documentation...
+if not exist docs mkdir docs
+docker-compose -f docker-compose.dev.yml exec api swag init -g cmd/api/main.go -o docs
+echo Swagger docs generated in docs/
 goto end
 
 :end

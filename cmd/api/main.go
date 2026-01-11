@@ -12,12 +12,34 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/cdunlap/djaas/internal/config"
 	"github.com/cdunlap/djaas/internal/database"
 	"github.com/cdunlap/djaas/internal/handler"
 	"github.com/cdunlap/djaas/internal/middleware"
 	"github.com/cdunlap/djaas/internal/service"
+	_ "github.com/cdunlap/djaas/docs"
 )
+
+// @title DJaaS API
+// @version 1.0
+// @description Dad Joke as a Service - A RESTful API for retrieving and managing dad jokes
+// @termsOfService https://djaas.cale.codes/terms
+
+// @contact.name Cale Dunlap
+// @contact.url https://cale.codes
+// @contact.email cale@cale.codes
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @BasePath /api/v1
+// @schemes https http
+
+// @tag.name Jokes
+// @tag.description Endpoints for retrieving jokes
+// @tag.name Tags
+// @tag.description Endpoints for managing tags
 
 func main() {
 	// Load configuration
@@ -121,6 +143,11 @@ func main() {
 		r.Post("/joke", h.HandleCreateJoke)
 		r.Get("/tags", h.HandleGetTags)
 	})
+
+	// Swagger documentation
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	// Serve static files from public directory
 	fileServer := http.FileServer(http.Dir("public"))

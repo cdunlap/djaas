@@ -11,10 +11,18 @@ import (
 )
 
 // HandleGetJoke handles GET /api/v1/joke requests
-// Supports query parameters:
-//   - search: search for jokes containing this string
-//   - category: filter by category
-//   - tags: comma-separated list of tags (e.g., "wordplay,puns")
+// @Summary Get a random joke
+// @Description Retrieve a random joke with optional filtering by search query, category, and tags
+// @Tags Jokes
+// @Accept json
+// @Produce json
+// @Param search query string false "Search query to filter jokes"
+// @Param category query string false "Category filter (e.g., 'general', 'food', 'science')"
+// @Param tags query string false "Comma-separated list of tags (e.g., 'wordplay,puns')"
+// @Success 200 {object} model.Joke
+// @Failure 404 {object} model.ErrorResponse "No jokes found"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /joke [get]
 func (h *Handler) HandleGetJoke(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -107,6 +115,14 @@ func (h *Handler) writeErrorJSON(w http.ResponseWriter, status int, error string
 }
 
 // HandleGetTags returns all available tags
+// @Summary Get all tags
+// @Description Retrieve a list of all available tags
+// @Tags Tags
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string][]string "List of tags"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /tags [get]
 func (h *Handler) HandleGetTags(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -131,6 +147,16 @@ type CreateJokeRequest struct {
 }
 
 // HandleCreateJoke handles POST /api/v1/joke requests
+// @Summary Create a new joke
+// @Description Add a new joke to the database with optional category and tags
+// @Tags Jokes
+// @Accept json
+// @Produce json
+// @Param joke body CreateJokeRequest true "Joke to create"
+// @Success 201 {object} model.Joke "Created joke"
+// @Failure 400 {object} model.ErrorResponse "Invalid request"
+// @Failure 500 {object} model.ErrorResponse "Internal server error"
+// @Router /joke [post]
 func (h *Handler) HandleCreateJoke(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
