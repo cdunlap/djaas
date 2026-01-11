@@ -102,6 +102,7 @@ func main() {
 	r := chi.NewRouter()
 
 	// Apply middleware
+	r.Use(middleware.SecurityHeaders())
 	r.Use(middleware.Recovery(logger))
 	r.Use(middleware.Logger(logger))
 
