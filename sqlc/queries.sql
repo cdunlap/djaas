@@ -83,3 +83,8 @@ WHERE t.name = ANY($1::text[])
   AND (j.setup ILIKE '%' || $3 || '%' OR j.punchline ILIKE '%' || $3 || '%')
 ORDER BY RANDOM()
 LIMIT 1;
+
+-- name: GetAllTags :many
+SELECT name
+FROM tags
+ORDER BY name ASC;

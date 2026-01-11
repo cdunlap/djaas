@@ -9,6 +9,7 @@ import (
 	"github.com/cdunlap/djaas/internal/database"
 	"github.com/cdunlap/djaas/internal/model"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var (
@@ -58,7 +59,7 @@ func (s *JokeService) SearchJokes(ctx context.Context, query string) (*model.Jok
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.SearchJokes(ctx, query)
+	joke, err := s.queries.SearchJokes(ctx, toPgText(query))
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found matching search query", "query", query)
@@ -83,7 +84,7 @@ func (s *JokeService) GetJokeByCategory(ctx context.Context, category string) (*
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.GetJokeByCategory(ctx, category)
+	joke, err := s.queries.GetJokeByCategory(ctx, toPgText(category))
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found in category", "category", category)
@@ -108,7 +109,12 @@ func (s *JokeService) GetJokeByCategoryAndSearch(ctx context.Context, category, 
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.GetJokeByCategoryAndSearch(ctx, category, query)
+	params := database.GetJokeByCategoryAndSearchParams{
+		Category: toPgText(category),
+		Column2:  toPgText(query),
+	}
+
+	joke, err := s.queries.GetJokeByCategoryAndSearch(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found matching category and search",
@@ -130,15 +136,30 @@ func (s *JokeService) GetJokeByCategoryAndSearch(ctx context.Context, category, 
 }
 
 // buildJokeWithTags builds a model.Joke with tags included
-func (s *JokeService) buildJokeWithTags(dbJoke *database.Joke, tags []string) *model.Joke {
+func (s *JokeService) buildJokeWithTags(dbJoke database.Joke, tags []string) *model.Joke {
+	// Convert pgtype.Text to *string
+	var category *string
+	if dbJoke.Category.Valid {
+		category = &dbJoke.Category.String
+	}
+
 	return &model.Joke{
 		ID:        dbJoke.ID,
 		Setup:     dbJoke.Setup,
 		Punchline: dbJoke.Punchline,
-		Category:  dbJoke.Category,
+		Category:  category,
 		Tags:      tags,
-		CreatedAt: dbJoke.CreatedAt,
-		UpdatedAt: dbJoke.UpdatedAt,
+		CreatedAt: dbJoke.CreatedAt.Time,
+		UpdatedAt: dbJoke.UpdatedAt.Time,
+	}
+}
+
+// Helper functions to convert Go types to pgtype
+
+func toPgText(s string) pgtype.Text {
+	return pgtype.Text{
+		String: s,
+		Valid:  true,
 	}
 }
 
@@ -173,7 +194,12 @@ func (s *JokeService) GetJokeByTagsAndCategory(ctx context.Context, tags []strin
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.GetJokeByTagsAndCategory(ctx, tags, category)
+	params := database.GetJokeByTagsAndCategoryParams{
+		Column1:  tags,
+		Category: toPgText(category),
+	}
+
+	joke, err := s.queries.GetJokeByTagsAndCategory(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found matching tags and category", "tags", tags, "category", category)
@@ -198,7 +224,12 @@ func (s *JokeService) GetJokeByTagsAndSearch(ctx context.Context, tags []string,
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.GetJokeByTagsAndSearch(ctx, tags, searchQuery)
+	params := database.GetJokeByTagsAndSearchParams{
+		Column1: tags,
+		Column2: toPgText(searchQuery),
+	}
+
+	joke, err := s.queries.GetJokeByTagsAndSearch(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found matching tags and search", "tags", tags, "search", searchQuery)
@@ -223,7 +254,13 @@ func (s *JokeService) GetJokeByAllFilters(ctx context.Context, tags []string, ca
 		return nil, ErrInvalidInput
 	}
 
-	joke, err := s.queries.GetJokeByAllFilters(ctx, tags, category, searchQuery)
+	params := database.GetJokeByAllFiltersParams{
+		Column1:  tags,
+		Category: toPgText(category),
+		Column3:  toPgText(searchQuery),
+	}
+
+	joke, err := s.queries.GetJokeByAllFilters(ctx, params)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			s.logger.Warn("no jokes found matching all filters", "tags", tags, "category", category, "search", searchQuery)
