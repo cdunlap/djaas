@@ -1,0 +1,153 @@
+basePath: /api/v1
+definitions:
+  handler.CreateJokeRequest:
+    properties:
+      category:
+        type: string
+      punchline:
+        type: string
+      setup:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  model.Joke:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      punchline:
+        type: string
+      setup:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+    type: object
+info:
+  contact:
+    email: cale@cale.codes
+    name: Cale Dunlap
+    url: https://cale.codes
+  description: Dad Joke as a Service - A RESTful API for retrieving and managing dad
+    jokes
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://djaas.cale.codes/terms
+  title: DJaaS API
+  version: "1.0"
+paths:
+  /joke:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a random joke with optional filtering by search query,
+        category, and tags
+      parameters:
+      - description: Search query to filter jokes
+        in: query
+        name: search
+        type: string
+      - description: Category filter (e.g., 'general', 'food', 'science')
+        in: query
+        name: category
+        type: string
+      - description: Comma-separated list of tags (e.g., 'wordplay,puns')
+        in: query
+        name: tags
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Joke'
+        "404":
+          description: No jokes found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get a random joke
+      tags:
+      - Jokes
+    post:
+      consumes:
+      - application/json
+      description: Add a new joke to the database with optional category and tags
+      parameters:
+      - description: Joke to create
+        in: body
+        name: joke
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateJokeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created joke
+          schema:
+            $ref: '#/definitions/model.Joke'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Create a new joke
+      tags:
+      - Jokes
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all available tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of tags
+          schema:
+            additionalProperties:
+              items:
+                type: string
+              type: array
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Get all tags
+      tags:
+      - Tags
+schemes:
+- https
+- http
+swagger: "2.0"
+tags:
+- description: Endpoints for retrieving jokes
+  name: Jokes
+- description: Endpoints for managing tags
+  name: Tags
