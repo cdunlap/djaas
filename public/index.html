@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>DJaaS - Dad Joke as a Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,17 +20,17 @@
         <main>
             <!-- Search Controls -->
             <div class="controls">
-                <div class="search-box">
+                <div role="group" class="search-box">
                     <input
                         type="text"
                         id="searchInput"
                         placeholder="Search for jokes..."
                         aria-label="Search for jokes"
                     >
-                    <button id="searchBtn" class="btn btn-primary">Search</button>
+                    <button id="searchBtn">Search</button>
                 </div>
 
-                <div class="filters">
+                <div class="grid filters">
                     <div class="filter-group">
                         <label for="categorySelect">Category:</label>
                         <select id="categorySelect">
@@ -72,24 +75,23 @@
                     </div>
                 </div>
 
-                <div class="action-buttons">
-                    <button id="randomBtn" class="btn btn-secondary">🎲 Random Joke</button>
-                    <button id="clearBtn" class="btn btn-tertiary">Clear Filters</button>
-                    <button id="addJokeBtn" class="btn btn-success">➕ Add Joke</button>
+                <div role="group" class="action-buttons">
+                    <button id="randomBtn" class="secondary">🎲 Random Joke</button>
+                    <button id="clearBtn" class="secondary outline">Clear Filters</button>
                 </div>
             </div>
 
             <!-- Joke Display -->
-            <div id="jokeDisplay" class="joke-card hidden">
+            <article id="jokeDisplay" class="joke-card hidden">
                 <div class="joke-content">
                     <p class="setup" id="jokeSetup"></p>
                     <p class="punchline" id="jokePunchline"></p>
                 </div>
-                <div class="joke-meta">
+                <footer class="joke-meta">
                     <span class="category" id="jokeCategory"></span>
                     <div class="tags" id="jokeTags"></div>
-                </div>
-            </div>
+                </footer>
+            </article>
 
             <!-- Loading State -->
             <div id="loading" class="loading hidden">
@@ -108,76 +110,6 @@
             </div>
         </main>
 
-        <!-- Add Joke Modal -->
-        <div id="addJokeModal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Add a New Joke</h2>
-                    <button id="closeModal" class="btn-close">&times;</button>
-                </div>
-                <form id="addJokeForm">
-                    <div class="form-group">
-                        <label for="jokeSetupInput">Setup (Required):</label>
-                        <textarea
-                            id="jokeSetupInput"
-                            name="setup"
-                            rows="3"
-                            placeholder="Why did the chicken cross the road?"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jokePunchlineInput">Punchline (Required):</label>
-                        <textarea
-                            id="jokePunchlineInput"
-                            name="punchline"
-                            rows="2"
-                            placeholder="To get to the other side!"
-                            required
-                        ></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jokeCategoryInput">Category (Optional):</label>
-                        <select id="jokeCategoryInput" name="category">
-                            <option value="">None</option>
-                            <option value="general">General</option>
-                            <option value="food">Food</option>
-                            <option value="animals">Animals</option>
-                            <option value="science">Science</option>
-                            <option value="technology">Technology</option>
-                            <option value="sports">Sports</option>
-                            <option value="dad">Dad</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="jokeTagsInput">Tags (Optional - comma separated):</label>
-                        <input
-                            type="text"
-                            id="jokeTagsInput"
-                            name="tags"
-                            placeholder="wordplay, puns, clever"
-                        >
-                        <small>Separate tags with commas. New tags will be created automatically.</small>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Add Joke</button>
-                        <button type="button" id="cancelBtn" class="btn btn-tertiary">Cancel</button>
-                    </div>
-                </form>
-
-                <div id="formSuccess" class="form-success hidden">
-                    ✅ Joke added successfully!
-                </div>
-
-                <div id="formError" class="form-error hidden">
-                    <p id="formErrorMessage"></p>
-                </div>
-            </div>
-        </div>
 
         <footer>
             <p>Powered by DJaaS API | <a href="/swagger/index.html" target="_blank">API Documentation</a></p>
