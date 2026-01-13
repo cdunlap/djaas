@@ -4,6 +4,15 @@
     --pico-font-size: 16px;
     --pico-line-height: 1.5;
     --pico-spacing: 1rem;
+
+    /* Override Pico colors for better integration */
+    --pico-primary: #667eea;
+    --pico-primary-hover: #5568d3;
+    --pico-primary-focus: rgba(102, 126, 234, 0.125);
+    --pico-secondary: #7c3aed;
+    --pico-secondary-hover: #6d28d9;
+    --pico-contrast: #667eea;
+    --pico-contrast-hover: #5568d3;
 }
 
 /* Override Pico's large defaults */
@@ -41,12 +50,14 @@ header h1 {
     font-size: 3rem;
     margin-bottom: 0.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    color: white;
 }
 
 .subtitle {
     font-size: 1.1rem;
     opacity: 0.9;
     margin: 0;
+    color: white;
 }
 
 /* Main Container */
@@ -66,17 +77,63 @@ main {
     margin-bottom: 1rem;
 }
 
+.search-box input {
+    border-radius: 8px 0 0 8px;
+}
+
+.search-box button {
+    border-radius: 0 8px 8px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.search-box button:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6d28d9 100%);
+}
+
 .filters {
     margin-bottom: 1rem;
 }
 
 .filter-group label {
     margin-bottom: 0.25rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.filter-group select {
+    border-radius: 8px;
 }
 
 .action-buttons {
     justify-content: center;
     margin-top: 0;
+}
+
+.action-buttons button {
+    border-radius: 8px;
+}
+
+button.secondary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+button.secondary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6d28d9 100%);
+}
+
+button.outline {
+    background: white;
+    border: 2px solid #667eea;
+    color: #667eea;
+}
+
+button.outline:hover {
+    background: #f3f4f6;
+    border-color: #5568d3;
+    color: #5568d3;
 }
 
 /* Joke Display */
@@ -110,6 +167,9 @@ main {
 
 .joke-content {
     margin-bottom: 1rem;
+}
+.joke-content p {
+    color: white;
 }
 
 .setup {
@@ -225,6 +285,7 @@ body > .container > footer {
 body > .container > footer p {
     margin: 0.25rem 0;
     font-size: 0.9rem;
+    color: white;
 }
 
 body > .container > footer a {
