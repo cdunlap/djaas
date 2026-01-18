@@ -9,7 +9,6 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "https://djaas.cale.codes/terms",
         "contact": {
             "name": "Cale Dunlap",
             "url": "https://cale.codes",

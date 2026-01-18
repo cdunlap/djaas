@@ -24,7 +24,6 @@ import (
 // @title DJaaS API
 // @version 1.0
 // @description Dad Joke as a Service - A RESTful API for retrieving and managing dad jokes
-// @termsOfService https://djaas.cale.codes/terms
 
 // @contact.name Cale Dunlap
 // @contact.url https://cale.codes

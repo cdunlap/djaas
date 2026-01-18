@@ -1,6 +1,51 @@
 # Security Guidelines
 
-## Secrets Management
+## API Token Management
+
+The DJaaS API uses token-based authentication for write operations (creating jokes).
+
+### Local Development
+
+1. **Set your API token in `.env.docker`:**
+   ```bash
+   API_TOKEN=your_secret_api_token_here
+   ```
+
+2. **Generate a strong token:**
+   ```bash
+   # Generate a random 32-character token
+   openssl rand -hex 32
+   ```
+
+3. **IMPORTANT:** Never use the default token in any public or shared environment.
+
+### Production Deployment
+
+**NEVER use development tokens in production!**
+
+Store API tokens using the same secret management systems as database passwords:
+
+- **AWS:** Use AWS Secrets Manager or Parameter Store
+- **Google Cloud:** Use Secret Manager
+- **Azure:** Use Key Vault
+- **Kubernetes:** Use Kubernetes Secrets
+
+Example (AWS):
+```bash
+aws secretsmanager create-secret \
+  --name djaas/api-token \
+  --secret-string "$(openssl rand -hex 32)"
+```
+
+### Rotating API Tokens
+
+1. Generate a new token
+2. Update secret in secret manager
+3. Deploy new version
+4. Notify API consumers of new token
+5. Delete old secret after transition period
+
+## Database Secrets Management
 
 ### Local Development (Docker Compose)
 
@@ -97,10 +142,41 @@ env:
         key: password
 ```
 
+## Implemented Security Features
+
+The application includes several built-in security measures:
+
+### Security Headers
+
+All responses include security headers:
+- `Strict-Transport-Security`: Forces HTTPS connections
+- `X-Content-Type-Options: nosniff`: Prevents MIME sniffing
+- `X-Frame-Options: DENY`: Prevents clickjacking
+- `X-XSS-Protection`: Enables XSS filtering
+- `Content-Security-Policy`: Restricts resource loading (relaxed for Swagger UI)
+- `Permissions-Policy`: Restricts browser features
+- `Referrer-Policy`: Controls referrer information
+
+### Request Logging
+
+All requests are logged with:
+- HTTP method, path, query parameters
+- Status code and response time
+- Client IP address and user agent
+- Useful for security auditing and incident response
+
+### Rate Limiting
+
+Per-IP rate limiting prevents abuse:
+- Configurable requests per time window
+- Returns 429 with Retry-After header
+- Disabled in development, enabled in production
+
 ## Security Checklist
 
 ### Before Deploying to Production
 
+- [ ] API token generated and stored in secret manager (use `openssl rand -hex 32`)
 - [ ] All passwords changed from defaults
 - [ ] Database password is strong (20+ characters, mixed case, numbers, symbols)
 - [ ] Secrets stored in proper secret management system (NOT in code/config)
@@ -111,11 +187,13 @@ env:
 - [ ] Database not publicly accessible (private subnet)
 - [ ] Security groups/firewall rules properly configured
 - [ ] Regular dependency updates scheduled
+- [ ] API token shared only with authorized consumers
 
 ### Environment-Specific Settings
 
 | Setting | Development | Production |
 |---------|------------|------------|
+| `API_TOKEN` | From `.env.docker` | From secrets manager (use `openssl rand -hex 32`) |
 | `DB_PASSWORD` | From `.env.docker` | From secrets manager |
 | `DB_SSLMODE` | `disable` | `require` |
 | `ENV` | `development` | `production` |
@@ -125,12 +203,14 @@ env:
 ## Common Security Mistakes to Avoid
 
 1. ❌ Committing `.env.docker` or `.env` files
-2. ❌ Using development passwords in production
+2. ❌ Using development API tokens or passwords in production
 3. ❌ Hardcoding credentials in docker-compose.yml
 4. ❌ Exposing database ports publicly
 5. ❌ Running containers as root (already handled in Dockerfile)
 6. ❌ Using `sslmode=disable` in production
 7. ❌ Storing secrets in environment variables in CI/CD logs
+8. ❌ Sharing API tokens publicly or in documentation
+9. ❌ Using weak API tokens (use `openssl rand -hex 32` minimum)
 
 ## Rotating Credentials
 

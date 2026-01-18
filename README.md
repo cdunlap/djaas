@@ -106,6 +106,11 @@ make run
 
 ## API Documentation
 
+Full interactive API documentation is available via Swagger UI:
+```
+http://localhost:8080/swagger/index.html
+```
+
 ### Endpoints
 
 #### Get a Random Joke
@@ -184,6 +189,61 @@ GET /api/v1/joke?tags=animals&search=dog
 GET /api/v1/joke?tags=wordplay&category=food&search=cheese
 ```
 
+#### Get All Available Tags
+
+```http
+GET /api/v1/tags
+```
+
+**Response:**
+```json
+{
+  "tags": ["wordplay", "puns", "dad-humor", "one-liner", "clever", "silly", ...]
+}
+```
+
+Returns all available tags that can be used for filtering jokes.
+
+#### Add a New Joke (Authenticated)
+
+```http
+POST /api/v1/joke
+```
+
+**Authentication Required:** Include `X-API-Token` header with your API token.
+
+**Request Body:**
+```json
+{
+  "setup": "Why don't scientists trust atoms?",
+  "punchline": "Because they make up everything!",
+  "category": "science",
+  "tags": ["wordplay", "chemistry", "clever"]
+}
+```
+
+**Response:**
+```json
+{
+  "id": 42,
+  "setup": "Why don't scientists trust atoms?",
+  "punchline": "Because they make up everything!",
+  "category": "science",
+  "tags": ["wordplay", "chemistry", "clever"],
+  "created_at": "2026-01-06T10:00:00Z",
+  "updated_at": "2026-01-06T10:00:00Z"
+}
+```
+
+**Authentication:**
+Set the `API_TOKEN` environment variable and include it in requests:
+```bash
+curl -X POST http://localhost:8080/api/v1/joke \
+  -H "X-API-Token: your_secret_api_token" \
+  -H "Content-Type: application/json" \
+  -d '{"setup": "Your setup", "punchline": "Your punchline", "category": "general"}'
+```
+
 #### Health Check
 
 ```http
@@ -212,7 +272,9 @@ All errors return JSON with the following format:
 
 **Status Codes:**
 - `200 OK`: Success
+- `201 Created`: Joke successfully created
 - `400 Bad Request`: Invalid parameters
+- `401 Unauthorized`: Missing or invalid API token
 - `404 Not Found`: No jokes found matching criteria
 - `429 Too Many Requests`: Rate limit exceeded
 - `500 Internal Server Error`: Server error
@@ -242,6 +304,7 @@ Configuration is done via environment variables. See `.env.example` for all avai
 | `PORT` | `8080` | Server port |
 | `ENV` | `development` | Environment (development/production) |
 | `LOG_LEVEL` | `info` | Log level (debug/info/warn/error) |
+| `API_TOKEN` | - | Secret token for authenticated endpoints (required for POST /joke) |
 
 ### Database Configuration
 
@@ -352,11 +415,18 @@ docker run -p 8080:8080 --env-file .env djaas:latest
 - Case-insensitive matching
 - Returns random matching joke
 
+**Security**
+- API token authentication for write operations
+- Security headers (HSTS, CSP, X-Frame-Options, etc.)
+- Rate limiting to prevent abuse
+- Panic recovery middleware
+- Request logging with structured slog
+
 **Error Handling**
 - Structured JSON error responses
 - Appropriate HTTP status codes
 - Internal errors logged but not exposed to clients
-- Panic recovery middleware
+- Panic recovery with stack trace logging
 
 **Database**
 - Connection pooling for performance
